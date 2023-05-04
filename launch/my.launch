@@ -1,0 +1,40 @@
+<launch>
+ <node name="notebook" pkg="uw_robothon" type="notebook_server.sh" cwd="node" args="$(find uw_robothon)" >
+ </node>
+ <node name="rviz" pkg="rviz" type="rviz" args="-d $(find uw_robothon)/rviz.rviz" />
+ <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
+    <arg name="color_fps" value="30" />
+    <arg name="color_width" value="1920" />
+    <arg name="color_height" value="1080" />
+ </include>
+ <!--<include file="$(find panda_moveit_config)/launch/franka_control.launch" >
+    <arg name="robot_ip" value="franka2" />
+    <arg name="load_gripper" value="true" />
+ </include>-->
+  <arg name="robot_ip" default="franka1" />
+  <arg name="load_gripper" default="true" />
+
+  <include file="$(find franka_control)/launch/franka_control.launch" pass_all_args="true" />
+  <!--
+  <arg name="arm_id" default="panda" />
+  <rosparam command="load" file="$(find franka_example_controllers)/config/franka_example_controllers.yaml" subst_value="true" />
+  <node name="controller_spawner2" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="cartesian_impedance_example_controller"/>
+  -->
+
+  <!-- By default use joint position controllers -->
+  <arg name="transmission" default="position" />
+  <!-- Start ROS controllers -->
+  <include file="$(find panda_moveit_config)/launch/ros_controllers.launch" pass_all_args="true" />
+
+  <!-- as well as MoveIt demo -->
+  <include file="$(find panda_moveit_config)/launch/demo.launch" pass_all_args="true">
+    <!-- robot description is loaded by franka_control.launch -->
+    <arg name="load_robot_description" value="false" />
+    <!-- MoveItSimpleControllerManager provides ros_control's JointTrajectory controllers
+         as well as GripperCommand actions -->
+    <arg name="moveit_controller_manager" value="simple" />
+    <arg name="use_rviz" value="false" />
+  </include>
+
+  <node name="camera_transform" pkg="tf" type="static_transform_publisher" args="0 0 0.06  0 -1.57 0  panda_hand camera_link 100" />
+</launch>

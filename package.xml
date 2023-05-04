@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>uw_robothon</name>
+  <version>0.0.1</version>
+  <description>A minimal ROS package</description>
+  <maintainer email="somebody@uwaterloo.ca">Somebody</maintainer>
+
+  <license>NONE</license>
+
+</package>
